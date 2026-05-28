@@ -1,0 +1,232 @@
+<Window x:Class="JobTrackerWPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:JobTrackerWPF.Converters"
+        Title="Job Interview Tracker" Height="780" Width="1200"
+        MinHeight="600" MinWidth="900"
+        Background="#F7F7F5" FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <conv:StatusToColorConverter x:Key="StatusColor"/>
+        <conv:StatusToFgConverter x:Key="StatusFg"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#1A1A2E">
+            <Grid Margin="24,0">
+                <TextBlock Text="📋 Job Interview Tracker" FontSize="20" FontWeight="SemiBold"
+                           Foreground="White" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtDbPath" FontSize="11" Foreground="#8888AA" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                    <Button Content="+ Add Interview" Click="BtnAdd_Click"
+                            Background="#378ADD" Foreground="White" BorderBrush="#185FA5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Stats Bar -->
+        <Border Grid.Row="1" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="20,14">
+            <StackPanel Orientation="Horizontal" x:Name="StatsPanel"/>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="2" Margin="20,16,20,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="380"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: List -->
+            <Border Grid.Column="0" Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Filters -->
+                    <Border Grid.Row="0" Padding="14,12" BorderBrush="#E8E8E8" BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal" x:Name="FilterPanel">
+                            <TextBlock Text="Filter:" FontSize="13" Foreground="#666" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox x:Name="CmbFilter" Width="130" SelectionChanged="Filter_Changed" Margin="0,0,10,0">
+                                <ComboBoxItem Content="All Statuses" IsSelected="True"/>
+                                <ComboBoxItem Content="Scheduled"/>
+                                <ComboBoxItem Content="Interviewed"/>
+                                <ComboBoxItem Content="Next Round"/>
+                                <ComboBoxItem Content="Offer"/>
+                                <ComboBoxItem Content="Rejected"/>
+                            </ComboBox>
+                            <TextBox x:Name="TxtSearch" Width="180" TextChanged="Search_Changed">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                        <Setter Property="Tag" Value="Search company, role, HR..."/>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button Content="Search" Margin="8,0,0,0" Click="BtnSearch_Click"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Interview List -->
+                    <ListView x:Name="LvInterviews" Grid.Row="1" BorderThickness="0"
+                              SelectionChanged="LvInterviews_SelectionChanged"
+                              Background="Transparent" Padding="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Company" Width="130" DisplayMemberBinding="{Binding CompanyName}"/>
+                                <GridViewColumn Header="Role" Width="140" DisplayMemberBinding="{Binding RoleName}"/>
+                                <GridViewColumn Header="Panel / Lane" Width="100" DisplayMemberBinding="{Binding PanelLane}"/>
+                                <GridViewColumn Header="HR Name" Width="100" DisplayMemberBinding="{Binding HRName}"/>
+                                <GridViewColumn Header="Date" Width="90" DisplayMemberBinding="{Binding InterviewDate}"/>
+                                <GridViewColumn Header="Status" Width="95">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="10" Padding="8,3"
+                                                    Background="{Binding Status, Converter={StaticResource StatusColor}}">
+                                                <TextBlock Text="{Binding Status}" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </Border>
+
+            <!-- Right: Detail Panel -->
+            <Border Grid.Column="2" Background="White" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="DetailPanel" Margin="18,16">
+
+                        <!-- Empty state -->
+                        <TextBlock x:Name="TxtSelectHint" Text="Select an interview to view details, or click '+ Add Interview' to get started."
+                                   TextWrapping="Wrap" Foreground="#999" FontSize="13" Margin="0,40,0,0" TextAlignment="Center"/>
+
+                        <!-- Detail Form -->
+                        <StackPanel x:Name="FormPanel" Visibility="Collapsed">
+                            <TextBlock x:Name="TxtFormTitle" FontSize="16" FontWeight="SemiBold" Foreground="#1A1A2E" Margin="0,0,0,14"/>
+
+                            <Label Content="Company name *"/>
+                            <TextBox x:Name="FCompany" Margin="0,0,0,10"/>
+
+                            <Label Content="Role / Position *"/>
+                            <TextBox x:Name="FRole" Margin="0,0,0,10"/>
+
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <Label Content="Panel / Lane"/>
+                                    <TextBox x:Name="FPanel"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <Label Content="HR Name"/>
+                                    <TextBox x:Name="FHR"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <Label Content="Interview date"/>
+                                    <DatePicker x:Name="FDate" FontSize="13"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <Label Content="Status"/>
+                                    <ComboBox x:Name="FStatus">
+                                        <ComboBoxItem Content="Scheduled" IsSelected="True"/>
+                                        <ComboBoxItem Content="Interviewed"/>
+                                        <ComboBoxItem Content="Next Round"/>
+                                        <ComboBoxItem Content="Offer"/>
+                                        <ComboBoxItem Content="Rejected"/>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
+
+                            <Label Content="Notes"/>
+                            <TextBox x:Name="FNotes" Height="60" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,14"/>
+
+                            <!-- Save / Delete buttons -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                                <Button Content="💾 Save" Click="BtnSave_Click"
+                                        Background="#378ADD" Foreground="White" BorderBrush="#185FA5" Margin="0,0,8,0"/>
+                                <Button Content="🗑 Delete" Click="BtnDelete_Click"
+                                        Background="#E24B4A" Foreground="White" BorderBrush="#A32D2D"
+                                        x:Name="BtnDelete" Visibility="Collapsed"/>
+                                <Button Content="✖ Cancel" Click="BtnCancel_Click" Margin="8,0,0,0"/>
+                            </StackPanel>
+
+                            <!-- Questions Section -->
+                            <Border BorderBrush="#E8E8E8" BorderThickness="0,1,0,0" Padding="0,14,0,0" x:Name="QSection" Visibility="Collapsed">
+                                <StackPanel>
+                                    <TextBlock Text="Interview questions" FontSize="14" FontWeight="SemiBold" Foreground="#1A1A2E" Margin="0,0,0,10"/>
+
+                                    <!-- Add Question -->
+                                    <Label Content="Question"/>
+                                    <TextBox x:Name="QTxt" Height="52" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,6"/>
+                                    <Grid Margin="0,0,0,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <Label Content="Round (e.g. Technical 1)"/>
+                                            <TextBox x:Name="QRound"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Bottom">
+                                            <Button Content="+ Add Question" Click="BtnAddQuestion_Click"
+                                                    Background="#1D9E75" Foreground="White" BorderBrush="#0F6E56"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Questions List -->
+                                    <ItemsControl x:Name="IcQuestions" Margin="0,10,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BorderBrush="#E8E8E8" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="10,8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition Width="32"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Grid.Column="0">
+                                                            <TextBlock Text="{Binding Round}" FontSize="10" Foreground="#999" Margin="0,0,0,2"/>
+                                                            <TextBlock Text="{Binding Question}" TextWrapping="Wrap" FontSize="12" Foreground="#222"/>
+                                                        </StackPanel>
+                                                        <Button Grid.Column="1" Content="✕" Width="24" Height="24"
+                                                                FontSize="11" Padding="0"
+                                                                Tag="{Binding Id}"
+                                                                Click="BtnDeleteQuestion_Click"
+                                                                VerticalAlignment="Top" HorizontalAlignment="Right"
+                                                                Background="Transparent" BorderBrush="#CCC"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
