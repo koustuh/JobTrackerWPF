@@ -23,5 +23,13 @@ namespace JobTrackerWPF.Models
         public string Question { get; set; } = "";
         public string Answer { get; set; } = "";
         public string Round { get; set; } = "";
+        public string Companies { get; set; } = ""; // comma-separated company names for question bank entries
+        public int Rating { get; set; } = 0; // 0-5
+    }
+
+    public class Company
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
     }
 }

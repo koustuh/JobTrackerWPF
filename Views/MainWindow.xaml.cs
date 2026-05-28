@@ -29,6 +29,29 @@ namespace JobTrackerWPF.Views
             UpdateStats();
         }
 
+        private void BtnOpenQuestionBank_Click(object sender, RoutedEventArgs e)
+        {
+            var qb = new QuestionBank();
+            qb.Owner = this;
+            qb.ShowDialog();
+        }
+
+        private void BtnCompanyQ_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.Tag is string company)
+            {
+                var qb = new QuestionBank(company) { Owner = this };
+                qb.ShowDialog();
+            }
+        }
+
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
+        {
+            // Reset the form fields to defaults
+            ClearForm();
+            MessageBox.Show("Form reset.", "Reset", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private void LoadList()
         {
             if (CmbFilter == null || TxtSearch == null || LvInterviews == null) return;
@@ -51,11 +74,16 @@ namespace JobTrackerWPF.Views
                 ("Offer", stats.ContainsKey("Offer") ? stats["Offer"] : 0, "#085041"),
                 ("Rejected", stats.ContainsKey("Rejected") ? stats["Rejected"] : 0, "#A32D2D"),
             };
+            var max = 1;
+            foreach (var (_, count, _) in items) if (count > max) max = count;
             foreach (var (label, count, color) in items)
             {
                 var sp = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0,0,28,0) };
                 sp.Children.Add(new TextBlock { Text = count.ToString(), FontSize = 22, FontWeight = FontWeights.SemiBold, Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color)!) });
                 sp.Children.Add(new TextBlock { Text = " " + label, FontSize = 13, Foreground = new SolidColorBrush(Color.FromRgb(100,100,100)), VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0,0,0,3) });
+                // small bar
+                var bar = new System.Windows.Shapes.Rectangle { Height = 10, Width = 60 * (double)count / max, Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(color)!), Margin = new Thickness(8,0,0,0), VerticalAlignment = VerticalAlignment.Center };
+                sp.Children.Add(bar);
                 StatsPanel.Children.Add(sp);
             }
         }

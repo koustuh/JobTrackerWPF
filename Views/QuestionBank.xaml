@@ -1,0 +1,31 @@
+<Window x:Class="JobTrackerWPF.Views.QuestionBank"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Question Bank" Height="600" Width="800" Background="White">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+            <Button Content="Add New" Click="BtnAdd_Click" Background="#1D9E75" Foreground="White"/>
+            <Button Content="Edit" Click="BtnEdit_Click" Margin="8,0,0,0"/>
+            <Button Content="Delete" Click="BtnDelete_Click" Margin="8,0,0,0"/>
+            <Button Content="Link to Companies" Click="BtnLink_Click" Margin="8,0,0,0"/>
+            <Button Content="Sort by Rating" Click="BtnSort_Click" Margin="8,0,0,0"/>
+            <Button Content="Close" Click="BtnClose_Click" Margin="8,0,0,0"/>
+        </StackPanel>
+        <ListView x:Name="LvQuestions" Grid.Row="1">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Id" Width="50" DisplayMemberBinding="{Binding Id}"/>
+                    <GridViewColumn Header="Question" Width="300" DisplayMemberBinding="{Binding Question}"/>
+                    <GridViewColumn Header="Round" Width="120" DisplayMemberBinding="{Binding Round}"/>
+                    <GridViewColumn Header="Answer" Width="150" DisplayMemberBinding="{Binding Answer}"/>
+                    <GridViewColumn Header="Companies" Width="150" DisplayMemberBinding="{Binding Companies}"/>
+                    <GridViewColumn Header="Rating" Width="70" DisplayMemberBinding="{Binding Rating}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

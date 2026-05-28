@@ -25,6 +25,8 @@
                            Foreground="White" VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock x:Name="TxtDbPath" FontSize="11" Foreground="#8888AA" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                    <Button Content="Q Bank" Click="BtnOpenQuestionBank_Click" Margin="0,0,8,0"
+                            Background="#6A5ACD" Foreground="White" BorderBrush="#5848B0"/>
                     <Button Content="+ Add Interview" Click="BtnAdd_Click"
                             Background="#378ADD" Foreground="White" BorderBrush="#185FA5"/>
                 </StackPanel>
@@ -81,7 +83,16 @@
                               Background="Transparent" Padding="0">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Company" Width="130" DisplayMemberBinding="{Binding CompanyName}"/>
+                                <GridViewColumn Header="Company" Width="170">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Content="Q" Width="26" Height="22" Margin="0,0,6,0" Click="BtnCompanyQ_Click" Tag="{Binding CompanyName}"/>
+                                                <TextBlock Text="{Binding CompanyName}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <GridViewColumn Header="Role" Width="140" DisplayMemberBinding="{Binding RoleName}"/>
                                 <GridViewColumn Header="Panel / Lane" Width="100" DisplayMemberBinding="{Binding PanelLane}"/>
                                 <GridViewColumn Header="HR Name" Width="100" DisplayMemberBinding="{Binding HRName}"/>
@@ -169,6 +180,7 @@
                                 <Button Content="🗑 Delete" Click="BtnDelete_Click"
                                         Background="#E24B4A" Foreground="White" BorderBrush="#A32D2D"
                                         x:Name="BtnDelete" Visibility="Collapsed"/>
+                                <Button Content="Reset" Click="BtnReset_Click" Margin="8,0,0,0"/>
                                 <Button Content="✖ Cancel" Click="BtnCancel_Click" Margin="8,0,0,0"/>
                             </StackPanel>
 
