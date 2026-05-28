@@ -1,0 +1,46 @@
+# Visual Studio / .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+
+# Rider
+.idea/
+
+# Ignore build outputs
+*.dll
+*.exe
+*.pdb
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# NuGet
+*.nupkg
+.packages/
+
+# Resharper
+_ReSharper*/
+*.ReSharper*/
+
+# Visual Studio cache files
+*.vsix
+
+# Database
+*.db
+*.sqlite
